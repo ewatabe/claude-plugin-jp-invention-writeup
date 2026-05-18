@@ -6,18 +6,28 @@
 
 ## インストール
 
-### Claude Code の plugin install 経由
+### Claude Code の marketplace 経由（推奨）
+
+このリポジトリは Claude Code のマーケットプレイス兼プラグインとして動く。Claude Code のプロンプトで:
 
 ```
-/plugin install https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/claude-plugin-jp-invention-writeup
+/plugin marketplace add https://github.com/ewatabe/claude-plugin-jp-invention-writeup
+/plugin install jp-invention-writeup@jp-invention-writeup
 ```
 
-または GitHub ミラー等にホストする場合は対応する URL を指定。
+1行目でリポジトリをマーケットプレイス登録、2行目で `<plugin名>@<marketplace名>` 形式でインストール。
+
+ローカルにクローン済みのものを使うなら:
+
+```
+/plugin marketplace add ~/claude-plugin-jp-invention-writeup
+/plugin install jp-invention-writeup@jp-invention-writeup
+```
 
 ### 手動 (clone + symlink)
 
 ```bash
-git clone <CLONE_URL> ~/claude-plugin-jp-invention-writeup
+git clone https://github.com/ewatabe/claude-plugin-jp-invention-writeup.git ~/claude-plugin-jp-invention-writeup
 # Claude Code がプラグインディレクトリとして認識する場所へリンク
 ln -s ~/claude-plugin-jp-invention-writeup ~/.claude/plugins/jp-invention-writeup
 ```
