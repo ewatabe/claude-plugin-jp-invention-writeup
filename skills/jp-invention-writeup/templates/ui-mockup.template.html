@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>{{案件名}}: 実施例{{N}} {{機能名}}</title>
+<!-- 日本語フォント (CDN) -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans JP', 'Yu Gothic UI', system-ui, sans-serif; }
+  .slide { width: 1920px; height: 1080px; background: #FAFBFC; display: flex; flex-direction: column; }
+
+  /* === ヘッダ（領域に応じて色変更） ===
+     分析/データ系     → #1F6FEB (青)
+     アラート/通知系   → #D9534F (赤)
+     同意/法務/承認系  → #10A37F (緑)
+     （ドメインに合わせて差し替え） */
+  .header { height: 72px; background: #1F6FEB; display: flex; align-items: center; padding: 0 32px; color: #fff; }
+  .header .logo { width: 36px; height: 36px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; color: #1F6FEB; font-weight: 700; font-size: 18px; }
+  .header .title { font-size: 22px; font-weight: 500; margin-left: 16px; flex: 1; }
+  .header .icon-group { display: flex; gap: 18px; font-size: 22px; }
+
+  /* === タブ === */
+  .tabs { height: 56px; background: #fff; border-bottom: 1px solid #E1E4E8; display: flex; padding: 0 32px; align-items: center; gap: 4px; }
+  .tab { padding: 14px 22px; font-size: 16px; color: #57606A; border-bottom: 3px solid transparent; }
+  .tab.active { color: #1F6FEB; border-bottom-color: #1F6FEB; font-weight: 600; }
+
+  /* === メインエリア === */
+  .main { flex: 1; display: flex; padding: 24px; gap: 24px; }
+  .panel { background: #fff; border: 1px solid #E1E4E8; border-radius: 8px; padding: 20px; display: flex; flex-direction: column; }
+  .panel-title { font-size: 18px; font-weight: 700; color: #24292F; margin-bottom: 12px; }
+
+  /* === 共通：バッジ/ピル === */
+  .badge { padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; display: inline-block; }
+  .badge-high { background: #FFE5E5; color: #CF222E; }
+  .badge-mid { background: #FFF4D6; color: #B08800; }
+  .badge-low { background: #E5F4FF; color: #1F6FEB; }
+  .badge-green { background: #DFF6DD; color: #1E8E3E; }
+
+  /* === フッタ === */
+  .footer { height: 32px; background: #F6F8FA; border-top: 1px solid #E1E4E8; display: flex; align-items: center; padding: 0 32px; font-size: 11px; color: #6E7781; }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <div class="header">
+    <div class="logo">G</div>
+    <div class="title">{{システム名}} — {{画面名}}</div>
+    <div class="icon-group">⚙ 👤 🔔</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab">タブ1</div>
+    <div class="tab active">タブ2 (該当機能)</div>
+    <div class="tab">タブ3</div>
+    <div class="tab">タブ4</div>
+  </div>
+
+  <div class="main">
+    <!-- 左パネル: メインの可視化 (チャート/図/テーブル) -->
+    <div class="panel" style="flex: 0 0 60%;">
+      <div class="panel-title">{{左パネルのタイトル}}</div>
+      <!--
+        ここに SVG でチャート/家系図/フローを描画。
+        絵文字は環境依存で豆腐化することがあるため、Unicode記号 (◉ ⚭ ✉ ⚗ ↺ ▣ ⏸ ▼ ▶) または SVG アイコンを使う。
+      -->
+    </div>
+
+    <!-- 右パネル: リスト/詳細/カード -->
+    <div class="panel" style="flex: 1;">
+      <div class="panel-title">{{右パネルのタイトル}}</div>
+    </div>
+  </div>
+
+  <div class="footer">© {{YYYY}} — 発明説明資料用デモ画面 / {{識別子ラベル}}: {{識別子}} / {{備考}}</div>
+</div>
+</body>
+</html>

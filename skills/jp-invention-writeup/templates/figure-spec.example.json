@@ -1,0 +1,80 @@
+{
+  "_comment": "図面1枚あたりのJSON仕様。スライド単位で1ファイル作る。座標はインチ、スライドサイズ 13.333 x 7.5 inch (16:9)。",
+  "figure_number": 1,
+  "title": "本実施形態に係る〇〇システムの構成例を示す図",
+  "figure_type": "block_diagram",
+  "_figure_type_choices": "block_diagram | flowchart | table | screen_mock",
+
+  "components": [
+    {
+      "id": "client",
+      "label": "参加者端末",
+      "ref": "1",
+      "shape": "rectangle",
+      "pos": [1.0, 2.5],
+      "size": [2.0, 1.0],
+      "ref_anchor": "top_left"
+    },
+    {
+      "id": "doctor",
+      "label": "主治医端末",
+      "ref": "2",
+      "shape": "rectangle",
+      "pos": [1.0, 4.0],
+      "size": [2.0, 1.0],
+      "ref_anchor": "top_left"
+    },
+    {
+      "id": "server",
+      "label": "会議運用支援サーバ",
+      "ref": "100",
+      "shape": "rectangle",
+      "pos": [5.0, 3.0],
+      "size": [3.0, 1.5],
+      "ref_anchor": "top_right"
+    },
+    {
+      "id": "internal_db",
+      "label": "施設内DB",
+      "ref": "3",
+      "shape": "cylinder",
+      "pos": [9.5, 1.5],
+      "size": [2.0, 1.0],
+      "ref_anchor": "top_left"
+    },
+    {
+      "id": "external_db",
+      "label": "外部DB",
+      "ref": "4",
+      "shape": "cylinder",
+      "pos": [9.5, 4.5],
+      "size": [2.0, 1.0],
+      "ref_anchor": "top_left"
+    }
+  ],
+
+  "arrows": [
+    {"from": "client", "to": "server", "direction": "right", "_comment": "left→right, right→left, up, down, bidirectional 等"},
+    {"from": "doctor", "to": "server", "direction": "right"},
+    {"from": "server", "to": "internal_db", "direction": "right"},
+    {"from": "server", "to": "external_db", "direction": "right"}
+  ],
+
+  "_flowchart_example": {
+    "figure_type": "flowchart",
+    "steps": [
+      {"id": "s1", "type": "start", "label": "開始"},
+      {"id": "s2", "type": "process", "label": "〇〇を取得", "ref": "S101"},
+      {"id": "s3", "type": "decision", "label": "〇〇か？", "ref": "S102"},
+      {"id": "s4", "type": "process", "label": "〇〇を実行", "ref": "S103"},
+      {"id": "s5", "type": "end", "label": "終了"}
+    ],
+    "transitions": [
+      {"from": "s1", "to": "s2"},
+      {"from": "s2", "to": "s3"},
+      {"from": "s3", "to": "s4", "label": "Yes"},
+      {"from": "s3", "to": "s5", "label": "No"},
+      {"from": "s4", "to": "s5"}
+    ]
+  }
+}

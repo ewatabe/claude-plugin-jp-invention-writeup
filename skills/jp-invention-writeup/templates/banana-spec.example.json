@@ -1,0 +1,39 @@
+{
+  "_comment": "Banana (Gemini Nano Banana) で生成するブランクレイアウト + 日本語ラベル合成の仕様。Phase 2 の発明説明資料PPTX用ヒーロー画像／概念図に限り使用。Phase 4 図面では使わない。",
+  "_example_note": "これは medical-AI 系の概念図を題材にしたサンプル仕様。新規案件で使う際は work/banana-specs/ に複製して steps / callouts / title / prompt の語彙をドメインに合わせて差し替える。prompt 英文も合わせて書き換えると illustration の icon が案件に合った絵になる。",
+
+  "prompt": "A premium medical-tech workflow infographic background plate on a deep navy #0F172A background with a faint hexagonal circuit grid. NEVER include any text, letters, words, numbers as labels, or typographic glyphs anywhere in the image — this is a blank layout that will have text added in post-production.\n\nA wide empty horizontal banner area is left blank at the very top of the canvas for a title to be added later (do not fill it with any text or shapes).\n\nIn the upper-middle region, a horizontal six-step pipeline runs left to right, with six evenly spaced rounded rectangular glassmorphism cards in frosted teal #14B8A6, connected by glowing teal chevron arrows. Each card contains, from top to bottom: a small circular coral #F97316 numbered badge in the upper-left corner with a single white digit (1, 2, 3, 4, 5, 6 in order); a centered small flat isometric icon; and a wide blank horizontal text-zone rectangle at the bottom of the card filled with slightly darker teal (#0E6F69) — this blank rectangle is where labels will be added later, so leave it completely empty of any text.\n\nStep 1 icon: a tissue sample on a microscope slide.\nStep 2 icon: a stack of three database cylinders.\nStep 3 icon: a book or document with circular refresh arrows.\nStep 4 icon: a DNA strand beside a semicircular percentage gauge.\nStep 5 icon: two stacked documents with a diff arrow between them.\nStep 6 icon: a laptop with a small bell notification dot.\n\nBelow the pipeline, three smaller frosted-teal callout cards evenly span the bottom of the canvas, each connected upward to the pipeline by a thin dashed teal line. Each callout has a small isometric icon on its left side and a wide blank rectangular text-zone on its right side, also filled with slightly darker teal — totally empty of text.\n\nCallout left icon: a small bell-curve distribution.\nCallout center icon: a small chat bubble containing three sparkles.\nCallout right icon: a small family-tree diagram.\n\nA faint translucent cyan #38BDF8 DNA double helix runs diagonally across the background behind the pipeline at low opacity for depth.\n\nABSOLUTELY NO TEXT, NO LETTERS, NO WORDS, NO ALPHABETS, NO NUMBERS OTHER THAN THE SIX BADGE DIGITS, NO CAPTIONS ANYWHERE. Premium clean medical-AI aesthetic, isometric 3D depth, subtle volumetric glow. WIRED magazine technology illustration spread.",
+
+  "aspect_ratio": "16:9",
+  "resolution": "2K",
+  "model": "gemini-3.1-flash-image-preview",
+
+  "labels": {
+    "title": {
+      "text": "{{案件のワークフロー名（例：ゲノム再検討支援ワークフロー）}}",
+      "size": 96
+    },
+    "steps": [
+      {"title": "{{ステップ1名}}", "desc": "{{ステップ1の補足}}"},
+      {"title": "{{ステップ2名}}", "desc": "{{ステップ2の補足}}"},
+      {"title": "{{ステップ3名}}", "desc": "{{ステップ3の補足}}"},
+      {"title": "{{ステップ4名}}", "desc": "{{ステップ4の補足}}"},
+      {"title": "{{ステップ5名}}", "desc": "{{ステップ5の補足}}"},
+      {"title": "{{ステップ6名}}", "desc": "{{ステップ6の補足}}"}
+    ],
+    "callouts": [
+      {"title": "{{コールアウト1}}", "desc": "{{コールアウト1の補足}}"},
+      {"title": "{{コールアウト2}}", "desc": "{{コールアウト2の補足}}"},
+      {"title": "{{コールアウト3}}", "desc": "{{コールアウト3の補足}}"}
+    ],
+    "fonts": {
+      "title_size": 96,
+      "step_title_size": 40,
+      "step_desc_size": 26,
+      "callout_title_size": 44,
+      "callout_desc_size": 28
+    },
+    "_overrides_comment": "自動検出が失敗する／微調整したい場合だけ overrides を使う。座標は (x0, y0, x1, y1) のピクセル単位。",
+    "overrides": {}
+  }
+}

@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+
+render-tools/node_modules/
+
+.DS_Store
+Thumbs.db
+
+*.swp
+*.swo
+.vscode/
+.idea/
