@@ -9,28 +9,25 @@
 ## 出力
 - `~/patent/<案件名>/output/発明説明資料.pptx`
 
-## ★ ビジュアル品質モードの選択 ★
+## ★ 既定方式：リッチスライド ★
 
-Phase 2 では用途に応じて 2 つの作り方を選ぶ。**着手前にユーザに用途を確認**：
+Phase 2 の発明説明資料は **常にリッチスライド方式で作る**。社内発明審議会・経営陣説明・特許事務所打合せのいずれにも耐えるビジュアル品質を最初から確保する。
 
-| モード | 適した用途 | 採用方式 | 作業時間 |
-|---|---|---|---|
-| **A. markdown ベース（簡素）** | 発明者レビュー・文言検討・本文ドラフト | `build_explainer_pptx.py`（後述 §3） | 数分〜 |
-| **B. リッチスライド（役員説明レベル）** | **社内発明審議会・経営陣・特許事務所打合せ** | **HTML+CSS→PNG→PPTX（後述 §3-Rich）** | 1〜2 時間 |
-
-「役員審議会で説明する」「ビジュアルを重視」と聞いたら **必ずモード B を提案**。
-モード B のデザインシステム・テンプレ・スクリプトは:
-- `templates/rich-slide.common.css`
-- `templates/rich-slide.template.html`
-- `templates/rich-slide.cover.html`
-- `scripts/render_all_slides.sh`
-- `scripts/build_rich_pptx.py`
-- `references/rich-slide-design.md`（詳細手順）
-
-両モードを併存させるユーザもいる。markdown でドラフト確定 → リッチ化、の二段階運用が無駄が少ない。
+- 作り方の詳細：`references/rich-slide-design.md`（必ず開く）
+- デザインシステム：`templates/rich-slide.common.css`
+- 通常スライド骨格：`templates/rich-slide.template.html`
+- 表紙スライド骨格：`templates/rich-slide.cover.html`
+- 並列レンダ：`scripts/render_all_slides.sh`
+- PPTX 組立：`scripts/build_rich_pptx.py`
 
 公知例論文の図を背景セクション等で引用したい場合は `references/figure-from-papers.md` を参照。
 **社内資料限定の引用利用**で、特許明細書・図面 PPTX への転載は厳禁。
+
+### 簡素 markdown モード（フォールバック）
+
+ユーザーが「クイックに文言だけ確認したい」「リッチ化は不要」と明示した場合のみ、
+`scripts/build_explainer_pptx.py`（markdown → 簡素 PPTX）を使うフォールバックを許容する。
+既定では使わない。
 
 ## スライド構成（サンプル準拠の5セクション）
 
@@ -69,20 +66,9 @@ Phase 2 では用途に応じて 2 つの作り方を選ぶ。**着手前にユ�
 `work/invention-explainer-draft.md` をユーザーに見せて、構成・順序・内容にOKをもらう。
 **この段階で骨子を確定させる。** pptx化後の修正は手間がかかる。
 
-### 3. PPTX生成（モード A：markdown ベース）
+### 3. PPTX生成（既定：リッチスライド方式）
 
-```bash
-python3 ${SKILL_DIR}/scripts/build_explainer_pptx.py \
-  --input ~/patent/<案件名>/work/invention-explainer-draft.md \
-  --output ~/patent/<案件名>/output/発明説明資料.pptx
-```
-
-スクリプトは markdown を読み、ヘッダレベルでスライドを区切り、本文を箇条書きで配置する。
-出力は文字中心・簡素デザインで、発明者・社内エンジニアレビュー向き。
-
-### 3-Rich. PPTX生成（モード B：リッチスライド方式 — 役員説明レベル）
-
-ビジュアル品質を最優先する場合のフルパイプライン。**詳細は `references/rich-slide-design.md` を参照**。
+**詳細は `references/rich-slide-design.md` を必ず読んで進める。** 概略は以下のとおり：
 
 ```bash
 WORK=~/patent/<案件名>/work
@@ -108,7 +94,7 @@ python3 ${SKILL_DIR}/scripts/build_rich_pptx.py \
     --output ~/patent/<案件名>/output/発明説明資料.pptx
 ```
 
-#### モード B のスライド構成例（中規模発明 18 枚）
+#### スライド構成例（中規模発明 18 枚）
 
 | # | 内容 | テンプレ |
 |---|---|---|
@@ -126,7 +112,7 @@ python3 ${SKILL_DIR}/scripts/build_rich_pptx.py \
 | 17 | 5.3 実測ベンチマーク | template |
 | 18 | クロージング | template |
 
-#### モード B のレビュー観点
+#### レビュー観点
 
 ユーザに見せる前に、Claude 自身が以下を必ず Read で目視チェック:
 

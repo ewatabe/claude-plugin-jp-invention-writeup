@@ -130,9 +130,9 @@ Claude が bash コマンドを生成する際は、`${SKILL_DIR}` を上記の�
 スキル本体に同梱する補助ツール：
 - `scripts/build_figure_pptx.py` — JSON仕様から特許図面PPTX（block / flowchart / table / image モード、`--rendered-dir` でHTMLレンダPNGを1スライド1図のフル画像埋込モードに切替可能）
 - `scripts/build_figure_html.py` — JSON仕様 → 高品質HTML（SVG+CSS）→ Puppeteerで PNG レンダ用。Yu Gothic UI を全 typeface に適用
-- `scripts/build_explainer_pptx.py` — markdown → 発明説明資料PPTX（モード A：簡素）
-- `scripts/build_rich_pptx.py` — **役員説明レベル** のリッチ PPTX を組み立てる。1920x1080 PNG を 1 スライド 1 画像でフルブリード配置（モード B）
+- `scripts/build_rich_pptx.py` — **Phase 2 既定** の発明説明資料 PPTX 組立て。1920x1080 PNG を 1 スライド 1 画像でフルブリード配置
 - `scripts/render_all_slides.sh` — `work/html-slides/*.html` を Chrome ヘッドレスで 1920x1080 PNG に並列レンダ（4 並列）
+- `scripts/build_explainer_pptx.py` — **(フォールバック)** markdown → 簡素 PPTX。ユーザーが明示的に「クイックモード」指定したときのみ使う
 - `scripts/build_spec_docx.py` — 各種素材 → 技術説明書DOCX。**markdown記法を除去**して整形、Yu Gothic UI を全 typeface に適用
 - `scripts/pptx_helpers.py` — python-pptx共通ヘルパー（噴き出し・引出線・テキスト置換・フォント統一・並べ替え・ページ番号補正）
   - 重要: `set_run_font_full(run, font_name)` を使うと latin/ea/cs typeface 全てを設定。日本語が別フォントで描画される問題を回避
@@ -205,12 +205,13 @@ Gemini はマルチバイトCJKのレンダリングが不安定（文字化け�
 2. 既存案件の続き？新規？
 3. どのフェーズから？（全フェーズ／Phase X から）
 4. `inputs/idea.md` はあるか？無ければまずそれを作る支援から
-5. **発明説明資料の用途・想定読者は？**（Phase 2 のビジュアル品質モード選択に直結）
-   - 「発明者レビュー」「文言検討」のみなら **モード A: markdown ベース（簡素）**
-   - 「役員審議会」「経営陣説明」「特許事務所打合せ」なら **モード B: リッチスライド方式**
-   - 用途が曖昧なら **B を提案** し、後で A に切り替えてもよい旨を伝える
-6. **公知例論文の図を引用したいか？**
+5. **公知例論文の図を引用したいか？**
    - 業界状況・課題セクションに論文の概念図を埋めると説得力が増す
    - 既定は不使用。利用時は `references/figure-from-papers.md` の引用ライセンス指針に従う
-7. **オプション:** 発明説明資料PPTXの表紙／概念図を画像生成（banana）で作りたいか？
+6. **オプション:** 発明説明資料PPTXの表紙／概念図を画像生成（banana）で作りたいか？
    - 既定は不使用。明示の依頼があれば Phase 2 の所定手順で利用する
+
+注：Phase 2 の発明説明資料 PPTX は **既定でリッチスライド方式**（HTML+CSS → Chrome
+ヘッドレス 1920x1080 PNG → PPTX フルブリード）で作る。ユーザーから明示的に「クイック
+モード」「簡素でよい」と指定された場合のみ、markdown ベース（`build_explainer_pptx.py`）に
+切り替える。
