@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>{{案件名}} — {{スライドタイトル}}</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* スライド固有のスタイルはここに書く（共通スタイルは common.css に集約） */
+  </style>
+</head>
+<body>
+<div class="slide">
+
+  <!-- 上部ヘッダ：案件名 (左) / セクション名 (右) -->
+  <div class="slide-header">
+    <div class="brand">{{案件略称}}<small>{{資料名（例: 発明説明資料）}}</small></div>
+    <div class="sec-label">{{セクション番号と名前（例: 3. 発明概要）}}</div>
+  </div>
+
+  <!-- タイトル -->
+  <div class="slide-title">{{スライドタイトル}}</div>
+  <div class="slide-subtitle">{{1〜2行のリード文}}</div>
+
+  <!-- メインエリア（自由レイアウト） -->
+  <div class="slide-main">
+
+    <!-- 例1: 2列グリッド -->
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title"><div class="card-icon">①</div>カードタイトル</div>
+        <p>カード本文。</p>
+      </div>
+      <div class="card">
+        <div class="card-title"><div class="card-icon accent">②</div>カードタイトル</div>
+        <p>カード本文。</p>
+      </div>
+    </div>
+
+    <!-- 例2: フローチャート横並び -->
+    <!--
+    <div class="flow">
+      <div class="flow-box">
+        <div class="step">STEP 1</div>
+        <div class="name">処理名</div>
+        <div class="desc">短い説明</div>
+      </div>
+      <div class="flow-arrow">▶</div>
+      <div class="flow-box">…</div>
+    </div>
+    -->
+
+    <!-- 例3: 比較テーブル -->
+    <!--
+    <table class="compare">
+      <thead><tr><th>項目</th><th>本発明</th><th>公知例</th></tr></thead>
+      <tbody>
+        <tr><td>軸1</td><td>●</td><td>×</td></tr>
+        <tr class="highlight"><td>軸2</td><td>●</td><td>×</td></tr>
+      </tbody>
+    </table>
+    -->
+
+  </div>
+
+  <!-- 下部フッタ：注記 (左) / ページ番号 (右) -->
+  <div class="slide-footer">
+    <div>{{出典・注記}}</div>
+    <div>P. {{ページ番号}}</div>
+  </div>
+
+</div>
+</body>
+</html>

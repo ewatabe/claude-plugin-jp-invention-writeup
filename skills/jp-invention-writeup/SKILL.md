@@ -121,6 +121,8 @@ Claude が bash コマンドを生成する際は、`${SKILL_DIR}` を上記の�
 - `references/figure-conventions.md` — 図番号・参照符号・キャプションのルール
 - `references/ui-mockup-html.md` — 実装画面UIモックのHTML/CSS記法（実施例スライド用）
 - `references/detailed-exhibit-design.md` — 詳細実施例スライドを高品質に作るための **対話的ヒアリング Q-0〜Q-7** とデザインシステム・反復ループ・品質チェックリスト
+- `references/rich-slide-design.md` — **役員説明レベルのリッチ発明説明資料**の作り方（HTML+CSS→Chromeヘッドレス→1920x1080 PNG→PPTXフルブリード方式）
+- `references/figure-from-papers.md` — 公知例論文の図をスライドに **引用** する標準パイプライン（pdftoppm + PIL 切り抜き、ライセンス注記、社内資料限定の指針）
 - `references/banana-image-gen.md` — **(オプション)** banana 経由の概念図生成：二段階方式・JSON仕様・トラブルシューティング
 
 ## ツールスタック
@@ -128,7 +130,9 @@ Claude が bash コマンドを生成する際は、`${SKILL_DIR}` を上記の�
 スキル本体に同梱する補助ツール：
 - `scripts/build_figure_pptx.py` — JSON仕様から特許図面PPTX（block / flowchart / table / image モード、`--rendered-dir` でHTMLレンダPNGを1スライド1図のフル画像埋込モードに切替可能）
 - `scripts/build_figure_html.py` — JSON仕様 → 高品質HTML（SVG+CSS）→ Puppeteerで PNG レンダ用。Yu Gothic UI を全 typeface に適用
-- `scripts/build_explainer_pptx.py` — markdown → 発明説明資料PPTX
+- `scripts/build_explainer_pptx.py` — markdown → 発明説明資料PPTX（モード A：簡素）
+- `scripts/build_rich_pptx.py` — **役員説明レベル** のリッチ PPTX を組み立てる。1920x1080 PNG を 1 スライド 1 画像でフルブリード配置（モード B）
+- `scripts/render_all_slides.sh` — `work/html-slides/*.html` を Chrome ヘッドレスで 1920x1080 PNG に並列レンダ（4 並列）
 - `scripts/build_spec_docx.py` — 各種素材 → 技術説明書DOCX。**markdown記法を除去**して整形、Yu Gothic UI を全 typeface に適用
 - `scripts/pptx_helpers.py` — python-pptx共通ヘルパー（噴き出し・引出線・テキスト置換・フォント統一・並べ替え・ページ番号補正）
   - 重要: `set_run_font_full(run, font_name)` を使うと latin/ea/cs typeface 全てを設定。日本語が別フォントで描画される問題を回避
@@ -140,6 +144,9 @@ Claude が bash コマンドを生成する際は、`${SKILL_DIR}` を上記の�
 - `scripts/compose_jp_labels.py` — **(オプション)** ブランクPNGの暗いティール枠を自動検出し、PIL + Yu Gothic/Noto Sans JP で日本語ラベルを上から合成。Geminiの日本語フォント崩れを完全に回避する
 - `render-tools/render_html.js` — Puppeteer で HTML → PNG レンダ（実施例UIモック用）
 - `templates/ui-mockup.template.html` — 実施例UIモックの出発点HTML
+- `templates/rich-slide.common.css` — リッチスライド方式の共通スタイル（デザインシステム、CSS変数、コンポーネント）
+- `templates/rich-slide.template.html` — リッチスライド方式の通常スライド出発点HTML（ヘッダ/タイトル/メイン/フッタの4領域構造）
+- `templates/rich-slide.cover.html` — リッチスライド方式の表紙スライド出発点HTML（グラデーション背景・ロゴ・メタ情報）
 - `templates/banana-spec.example.json` — banana 画像生成＋ラベル合成の仕様サンプル
 - `templates/brainstorming.template.md` — Phase 1 深掘りの記録テンプレ（germline案件を範に章立て）
 
@@ -147,6 +154,12 @@ Claude が bash コマンドを生成する際は、`${SKILL_DIR}` を上記の�
 - `python-pptx`, `python-docx` (pip)
 - Node.js + `puppeteer`（`render-tools/` 配下に local install 済み）
 - 公式 `pptx` Skill（`~/.claude/skills/pptx/`）を参照資産として保持
+
+外部依存（リッチスライド方式 — モード B 利用時のみ）:
+- `google-chrome` または `google-chrome-stable`（ヘッドレスで 1920x1080 PNG レンダリング）
+- 日本語フォント（Noto Sans CJK JP 推奨。Linux なら `fonts-noto-cjk`）
+- `Pillow`（pip） — 論文図引用時の切り抜きで使用
+- `poppler-utils`（`pdftoppm` / `pdfimages`） — 論文 PDF からのページ画像化
 
 外部依存（オプション — `--use-banana` を有効にした場合のみ）:
 - `Pillow` (pip) — 日本語ラベル合成
@@ -192,5 +205,12 @@ Gemini はマルチバイトCJKのレンダリングが不安定（文字化け�
 2. 既存案件の続き？新規？
 3. どのフェーズから？（全フェーズ／Phase X から）
 4. `inputs/idea.md` はあるか？無ければまずそれを作る支援から
-5. **オプション:** 発明説明資料PPTXの表紙／概念図を画像生成（banana）で作りたいか？
+5. **発明説明資料の用途・想定読者は？**（Phase 2 のビジュアル品質モード選択に直結）
+   - 「発明者レビュー」「文言検討」のみなら **モード A: markdown ベース（簡素）**
+   - 「役員審議会」「経営陣説明」「特許事務所打合せ」なら **モード B: リッチスライド方式**
+   - 用途が曖昧なら **B を提案** し、後で A に切り替えてもよい旨を伝える
+6. **公知例論文の図を引用したいか？**
+   - 業界状況・課題セクションに論文の概念図を埋めると説得力が増す
+   - 既定は不使用。利用時は `references/figure-from-papers.md` の引用ライセンス指針に従う
+7. **オプション:** 発明説明資料PPTXの表紙／概念図を画像生成（banana）で作りたいか？
    - 既定は不使用。明示の依頼があれば Phase 2 の所定手順で利用する

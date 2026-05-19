@@ -9,6 +9,29 @@
 ## 出力
 - `~/patent/<案件名>/output/発明説明資料.pptx`
 
+## ★ ビジュアル品質モードの選択 ★
+
+Phase 2 では用途に応じて 2 つの作り方を選ぶ。**着手前にユーザに用途を確認**：
+
+| モード | 適した用途 | 採用方式 | 作業時間 |
+|---|---|---|---|
+| **A. markdown ベース（簡素）** | 発明者レビュー・文言検討・本文ドラフト | `build_explainer_pptx.py`（後述 §3） | 数分〜 |
+| **B. リッチスライド（役員説明レベル）** | **社内発明審議会・経営陣・特許事務所打合せ** | **HTML+CSS→PNG→PPTX（後述 §3-Rich）** | 1〜2 時間 |
+
+「役員審議会で説明する」「ビジュアルを重視」と聞いたら **必ずモード B を提案**。
+モード B のデザインシステム・テンプレ・スクリプトは:
+- `templates/rich-slide.common.css`
+- `templates/rich-slide.template.html`
+- `templates/rich-slide.cover.html`
+- `scripts/render_all_slides.sh`
+- `scripts/build_rich_pptx.py`
+- `references/rich-slide-design.md`（詳細手順）
+
+両モードを併存させるユーザもいる。markdown でドラフト確定 → リッチ化、の二段階運用が無駄が少ない。
+
+公知例論文の図を背景セクション等で引用したい場合は `references/figure-from-papers.md` を参照。
+**社内資料限定の引用利用**で、特許明細書・図面 PPTX への転載は厳禁。
+
 ## スライド構成（サンプル準拠の5セクション）
 
 過去発明説明資料PPTXのサンプルが `~/patent/sample/` にあればその章立てを踏襲。なくても以下の構成で構わない：
@@ -46,7 +69,7 @@
 `work/invention-explainer-draft.md` をユーザーに見せて、構成・順序・内容にOKをもらう。
 **この段階で骨子を確定させる。** pptx化後の修正は手間がかかる。
 
-### 3. PPTX生成
+### 3. PPTX生成（モード A：markdown ベース）
 
 ```bash
 python3 ${SKILL_DIR}/scripts/build_explainer_pptx.py \
@@ -55,6 +78,65 @@ python3 ${SKILL_DIR}/scripts/build_explainer_pptx.py \
 ```
 
 スクリプトは markdown を読み、ヘッダレベルでスライドを区切り、本文を箇条書きで配置する。
+出力は文字中心・簡素デザインで、発明者・社内エンジニアレビュー向き。
+
+### 3-Rich. PPTX生成（モード B：リッチスライド方式 — 役員説明レベル）
+
+ビジュアル品質を最優先する場合のフルパイプライン。**詳細は `references/rich-slide-design.md` を参照**。
+
+```bash
+WORK=~/patent/<案件名>/work
+mkdir -p $WORK/html-slides $WORK/figures-rendered
+
+# Step A. 共通 CSS をコピー
+cp ${SKILL_DIR}/templates/rich-slide.common.css $WORK/html-slides/common.css
+
+# Step B. 個別スライドを HTML で記述
+#   ・templates/rich-slide.template.html を起点に編集
+#   ・表紙だけは templates/rich-slide.cover.html を起点
+#   ・命名規約: NN-name.html （01-cover, 02-agenda, ... 18-closing）
+#   ・スライド間に追加挿入したい場合は 04b-extra.html のように "b/c" で命名
+
+# Step C. 全 HTML を 1920x1080 PNG に並列レンダ
+bash ${SKILL_DIR}/scripts/render_all_slides.sh \
+    $WORK/html-slides/ \
+    $WORK/figures-rendered/
+
+# Step D. PNG を PPTX に 1 スライド 1 画像でフルブリード配置
+python3 ${SKILL_DIR}/scripts/build_rich_pptx.py \
+    --rendered-dir $WORK/figures-rendered/ \
+    --output ~/patent/<案件名>/output/発明説明資料.pptx
+```
+
+#### モード B のスライド構成例（中規模発明 18 枚）
+
+| # | 内容 | テンプレ |
+|---|---|---|
+| 01 | 表紙 | `rich-slide.cover.html` |
+| 02 | アジェンダ | `rich-slide.template.html` |
+| 03 | 1.1 業界の状況（数値ファクト＋構造図） | template |
+| 04 | 1.2 現状の課題（6 課題カード） | template |
+| 04b | 1.3 公知例の代表例（論文 Fig 引用） | template + `figure-from-papers.md` |
+| 05 | 2.1 本発明の目的（ヒーロー＋4 目的） | template |
+| 06 | 3.1 発明概要（アーキ全体図） | template |
+| 07-09 | 3.2-3.4 発明のポイント（独立項・従属項） | template |
+| 10-14 | 4. 実施例（UI モック・概念図） | template |
+| 15 | 5.1 独立請求項のサマリ | template |
+| 16 | 5.2 公知例差別化表 | template（`table.compare` 利用） |
+| 17 | 5.3 実測ベンチマーク | template |
+| 18 | クロージング | template |
+
+#### モード B のレビュー観点
+
+ユーザに見せる前に、Claude 自身が以下を必ず Read で目視チェック:
+
+- [ ] 文字が画面から溢れていないか（1920x1080 内に収まる）
+- [ ] 配色が `common.css` のデザインシステムに沿っているか
+- [ ] 各スライドのフッタにページ番号と注記が入っているか
+- [ ] 論文図を引用しているスライドは出典枠が完備されているか
+- [ ] 日本語フォントが正しくレンダされているか（豆腐がないか）
+
+問題があれば HTML を修正して 1 枚だけ再レンダ（Step C 相当を該当ファイルだけ実行）。
 
 ### 3.5. （任意）表紙／概念図を banana で生成する
 

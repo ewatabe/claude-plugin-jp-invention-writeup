@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>{{案件名}} — 表紙</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* 表紙固有スタイル — common.css の .cover-slide を継承 */
+    .cover-inner .deco2 {
+      position: absolute;
+      right: 280px;
+      bottom: -200px;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: rgba(16,185,129,0.12);
+    }
+    .cover-logo { display: flex; align-items: center; gap: 20px; position: relative; }
+    .cover-logo .mark {
+      width: 80px; height: 80px; border-radius: 18px;
+      background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 38px; color: #1E40AF;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+    .cover-logo .name {
+      font-size: 36px; font-weight: 900; letter-spacing: 0.08em;
+    }
+    .cover-logo .name small {
+      display: block; font-size: 14px; font-weight: 400;
+      letter-spacing: 0.3em; opacity: 0.85; margin-top: 4px;
+    }
+    .cover-sub {
+      font-size: 28px; font-weight: 500; line-height: 1.5;
+      opacity: 0.92; max-width: 1500px; position: relative;
+    }
+    .cover-tags {
+      display: flex; gap: 12px; margin-top: 32px; position: relative;
+    }
+    .cover-tag {
+      padding: 8px 18px; border-radius: 999px;
+      background: rgba(255,255,255,0.15);
+      font-size: 14px; font-weight: 500;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+    .cover-meta {
+      display: flex; gap: 56px; align-items: flex-end;
+      border-top: 2px solid rgba(255,255,255,0.3);
+      padding-top: 28px; position: relative;
+    }
+    .cover-meta-item .lbl {
+      font-size: 13px; opacity: 0.7;
+      letter-spacing: 0.18em; margin-bottom: 6px; font-weight: 500;
+    }
+    .cover-meta-item .val { font-size: 22px; font-weight: 700; }
+  </style>
+</head>
+<body>
+<div class="slide cover-slide">
+  <div class="cover-inner">
+    <div class="cover-decor"></div>
+    <div class="deco2"></div>
+
+    <!-- 上部：ロゴ / プロジェクト名 -->
+    <div class="cover-logo">
+      <div class="mark">{{ロゴ1文字}}</div>
+      <div class="name">{{プロジェクト名}}<small>{{プロジェクトの正式名（英文1行）}}</small></div>
+    </div>
+
+    <!-- 中央：大タイトル + サブタイトル + タグ -->
+    <div>
+      <div class="cover-title">
+        <span class="em">{{キーワード強調1}}</span>{{タイトル本文}}<br/>
+        {{タイトル続き}}
+      </div>
+      <div class="cover-sub">{{副タイトル/リード文}}</div>
+      <div class="cover-tags">
+        <div class="cover-tag">▸ {{タグ1}}</div>
+        <div class="cover-tag">▸ {{タグ2}}</div>
+        <div class="cover-tag">▸ {{タグ3}}</div>
+        <div class="cover-tag">▸ {{タグ4}}</div>
+      </div>
+    </div>
+
+    <!-- 下部：メタ情報（案件番号・所属・発明者・日付） -->
+    <div class="cover-meta">
+      <div class="cover-meta-item"><div class="lbl">案件番号</div><div class="val">{{案件番号}}</div></div>
+      <div class="cover-meta-item"><div class="lbl">所属</div><div class="val">{{所属}}</div></div>
+      <div class="cover-meta-item"><div class="lbl">発明者</div><div class="val">{{発明者氏名}}</div></div>
+      <div class="cover-meta-item"><div class="lbl">作成日</div><div class="val">{{YYYY / MM / DD}}</div></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
