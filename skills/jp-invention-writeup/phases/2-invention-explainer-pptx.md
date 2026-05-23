@@ -20,6 +20,23 @@ Phase 2 の発明説明資料は **常にリッチスライド方式で作る**�
 - 並列レンダ：`scripts/render_all_slides.sh`
 - PPTX 組立：`scripts/build_rich_pptx.py`
 
+### 組織テンプレートが配置されている場合
+
+`inputs/template.pptx`（または `~/patent/sample/template.pptx`）が見つかった場合は、
+**着手前に必ず以下を実行** してビジュアルを組織の標準に合わせる:
+
+1. `pptx-task-ops` スキルでテンプレ全スライドを PNG 画像化
+2. Claude が画像を `Read` して **配色・ロゴ・フォント・章扉デザイン** を目視抽出
+3. `work/html-slides/common.css` の CSS 変数（`--primary` / `--accent` / `--text` 等）を
+   テンプレの配色に書き換える
+4. テンプレからロゴ画像を抽出して `work/html-slides/logo.png` に配置、各 HTML の
+   `slide-header` または `cover-slide` で読み込む
+5. 表紙・章扉は **テンプレの該当スライドをそのまま流用** するか、本スキルの
+   `templates/rich-slide.cover.html` を組織デザインに合わせて改変する選択肢を
+   ユーザーに提示
+
+詳細手順は `references/rich-slide-design.md` の「組織テンプレートとの統合」節を参照。
+
 公知例論文の図を背景セクション等で引用したい場合は `references/figure-from-papers.md` を参照。
 **社内資料限定の引用利用**で、特許明細書・図面 PPTX への転載は厳禁。
 

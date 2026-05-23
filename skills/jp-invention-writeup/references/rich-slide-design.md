@@ -158,6 +158,136 @@ python3 ${SKILL_DIR}/scripts/build_rich_pptx.py \
 
 吹き出し（callout）で「請求項 N 対応」を明示すると、進歩性主張の根拠説明に直結する。
 
+## 組織テンプレートとの統合
+
+`inputs/template.pptx`（または `~/patent/sample/template.pptx`）が配置されている場合は、
+ビジュアル品質を組織の標準に合わせるため **着手前にテンプレ抽出ワークを必ず実施**する。
+
+### Step 1: テンプレを画像化して目視抽出
+
+```bash
+# pptx-task-ops スキルで全スライドを PNG 化
+# 出力先: ~/patent/<案件名>/work/template-previews/template-NN.png
+```
+
+または `~/.claude/skills/pptx-task-ops/scripts/pptx_rasterize.py` を直接呼んでもよい:
+
+```bash
+python3 ~/.claude/skills/pptx-task-ops/scripts/pptx_rasterize.py \
+    ~/patent/<案件名>/inputs/template.pptx \
+    --out-dir ~/patent/<案件名>/work/template-previews/
+```
+
+Claude が出力 PNG を `Read` で順次確認し、以下を抽出する:
+
+| 項目 | 確認場所 |
+|---|---|
+| 主色（ヘッダ・タイトル文字色） | 表紙、章扉、ヘッダ帯 |
+| アクセント色（強調・バッジ） | 強調語、グラフ |
+| 背景色 | 全スライド |
+| 本文文字色 | 本文段落 |
+| ロゴ | 表紙、各スライドのヘッダ |
+| 主フォント | 全スライド共通の和文・欧文フォント |
+| 表紙レイアウト | 大タイトル位置、サブタイトル、メタ情報の配置 |
+| 章扉レイアウト | セクション区切りの構成 |
+| フッタ | ページ番号位置、コピーライト |
+
+### Step 2: common.css の CSS 変数を書き換え
+
+抽出した配色を `work/html-slides/common.css` の `:root` に反映:
+
+```css
+:root {
+  --primary: #<テンプレ主色>;       /* 例: 表紙ヘッダ・タイトル */
+  --primary-dark: #<暗い派生色>;
+  --primary-light: #<明るい派生色>;
+  --accent: #<アクセント色>;        /* 例: 強調語・グラフ */
+  --accent-dark: #<暗いアクセント>;
+  --bg: #<背景色>;
+  --text: #<本文色>;
+  --text-muted: #<薄い本文色>;
+  /* warn / info は組織テンプレに依存しないので既定値を維持してよい */
+}
+```
+
+数値の派生色は手作業で算出するか、原色に対し HSL の明度を ±10〜20% 動かす目安で。
+
+### Step 3: ロゴ画像を抽出して各スライドへ配置
+
+```bash
+# python-pptx でテンプレ PPTX 内の画像を一括抽出
+python3 -c "
+from pptx import Presentation
+from pathlib import Path
+p = Presentation('~/patent/<案件名>/inputs/template.pptx')
+out = Path('~/patent/<案件名>/work/html-slides/').expanduser()
+out.mkdir(parents=True, exist_ok=True)
+for i, slide in enumerate(p.slides):
+    for j, shape in enumerate(slide.shapes):
+        if shape.shape_type == 13:  # picture
+            img = shape.image
+            ext = img.ext
+            (out / f'template-img-s{i+1}-{j+1}.{ext}').write_bytes(img.blob)
+            print(f'extracted: template-img-s{i+1}-{j+1}.{ext}')
+"
+```
+
+抽出した画像から組織ロゴを特定して `logo.png` にリネーム、HTML ヘッダで読み込む:
+
+```html
+<div class="slide-header">
+  <div class="brand">
+    <img src="logo.png" alt="logo" style="height:32px;vertical-align:middle;margin-right:8px;">
+    {{案件略称}}<small>{{資料名}}</small>
+  </div>
+  <div class="sec-label">{{セクション}}</div>
+</div>
+```
+
+または表紙の `cover-logo .mark`（既定は四角の頭文字ロゴ）を画像差し替えする。
+
+### Step 4: 表紙・章扉の選択
+
+表紙・章扉については、以下のいずれかを選ぶ（**ユーザーに必ず確認**）:
+
+| 方針 | 利点 | 課題 |
+|---|---|---|
+| (a) テンプレの該当スライドを **そのまま流用**（PPTX 上で差し替え合成） | 組織フォーマット完全準拠 | リッチスライド方式と混在し、編集経路が 2 種類になる |
+| (b) `templates/rich-slide.cover.html` を **組織デザインに合わせて改変** | 編集経路が 1 種類で済む | 完全に同じ見た目を再現するのは難しい |
+
+(a) を選んだ場合の組立方法:
+
+```python
+# テンプレの表紙スライドを残しつつ、コンテンツスライドだけ画像で挿入する
+from pptx import Presentation
+from pptx.util import Emu
+
+# テンプレを起点にする
+prs = Presentation('~/patent/<案件名>/inputs/template.pptx')
+
+# テンプレに含まれるコンテンツスライド（表紙・章扉以外）は削除して、
+# リッチスライドの PNG を挿入する。表紙・章扉は残す。
+# … 具体的な削除/挿入順序は案件に応じて調整 …
+```
+
+(b) を選んだ場合は、`rich-slide.cover.html` をコピーして組織カラー・ロゴに書き換えて
+`work/html-slides/01-cover.html` として配置する。
+
+### Step 5: 結果を Read で確認
+
+レンダ後の PNG を `Read` ツールで全枚確認し、組織テンプレと配色・トーンが一致しているか
+チェックする。違和感があれば CSS 変数を再調整して該当スライドだけ再レンダする
+（最終節「スライド差し替えだけしたい」参照）。
+
+### よくある落とし穴
+
+- **テンプレが古い・低解像度**: pptx-task-ops で画像化したときに解像度が低いと配色抽出が困難。
+  PowerPoint で開いて手動でカラーコードを確認する方が早い場合がある
+- **テンプレに不要なマスター要素が多い**: 流用方針 (a) は、テンプレ側の不要要素も持ち込んで
+  しまうため、シンプルにしたいなら (b) を推奨
+- **フォント差異**: テンプレが Meiryo や HG ゴシック等を使っているとき、common.css は
+  Noto Sans JP の CDN を使うため完全一致しない。発表用には十分なレベル
+
 ## トラブルシューティング
 
 ### 日本語が豆腐になる

@@ -50,6 +50,7 @@ Claude が bash コマンドを生成する際は、`${SKILL_DIR}` を上記の�
 │   ├── brainstorming.md   # Claude等との壁打ち履歴（任意）
 │   ├── claims-draft.txt   # 既に書きかけの請求項（任意）
 │   ├── invention-explainer-wip.pptx # 作りかけの発明説明資料（任意・pptx or md）
+│   ├── template.pptx      # 組織の発明説明資料テンプレート（任意。配色・ロゴ・フォントの参考に）
 │   ├── prior-art.txt      # 特許事務所の公知例調査結果（任意・テキスト）
 │   └── references/        # その他参考資料（論文・社内資料など）
 ├── work/
@@ -73,6 +74,7 @@ Claude が bash コマンドを生成する際は、`${SKILL_DIR}` を上記の�
 | `inputs/brainstorming.md` | Phase 1 | 壁打ち履歴を一次情報として読み、`idea-expanded.md` のドラフトを先に提示してから不足のみヒアリング。十分充実していれば深掘り対話をスキップ |
 | `inputs/claims-draft.txt` | Phase 3 | ゼロから書かず、既存ドラフトを読み込んだ上で公知例差別化チェック→改訂提案を生成 |
 | `inputs/invention-explainer-wip.pptx` | Phase 2 | `pptx-task-ops` スキルで内容抽出 → 既存スライドを保持しつつ未着手セクションのみ補完案を出す |
+| `inputs/template.pptx` | Phase 2 | `pptx-task-ops` で表紙・章扉等を画像化 → カラー・ロゴ・フォントを抽出して `work/html-slides/common.css` に反映。表紙等はテンプレを流用する案も提示（詳細：`references/rich-slide-design.md` §組織テンプレートとの統合） |
 | `work/invention-explainer-draft.md` | Phase 2 | mdベースの作りかけがあれば、それをそのまま編集対象として続行 |
 | `work/idea-expanded.md` | Phase 1 | 既にPhase 1が完了済みとみなす。ユーザーに「内容更新が必要か」だけ確認 |
 | `output/*` | 各 | 既に納品物がある場合は、上書き前に必ずユーザーに確認 |
@@ -205,10 +207,16 @@ Gemini はマルチバイトCJKのレンダリングが不安定（文字化け�
 2. 既存案件の続き？新規？
 3. どのフェーズから？（全フェーズ／Phase X から）
 4. `inputs/idea.md` はあるか？無ければまずそれを作る支援から
-5. **公知例論文の図を引用したいか？**
+5. **組織の発明説明資料 PPTX テンプレートはあるか？**
+   - `~/patent/<案件名>/inputs/template.pptx` または `~/patent/sample/template.pptx` を確認
+   - あれば、`references/rich-slide-design.md` の「組織テンプレートとの統合」節に従い、
+     テンプレからカラー・ロゴ・フォント・表紙レイアウトを抽出して反映する
+   - 抽出方法は `pptx-task-ops` スキルでスライド画像化 → Claude が目視確認 → `common.css`
+     の CSS 変数を書き換え、ロゴ画像を `work/html-slides/` に配置
+6. **公知例論文の図を引用したいか？**
    - 業界状況・課題セクションに論文の概念図を埋めると説得力が増す
    - 既定は不使用。利用時は `references/figure-from-papers.md` の引用ライセンス指針に従う
-6. **オプション:** 発明説明資料PPTXの表紙／概念図を画像生成（banana）で作りたいか？
+7. **オプション:** 発明説明資料PPTXの表紙／概念図を画像生成（banana）で作りたいか？
    - 既定は不使用。明示の依頼があれば Phase 2 の所定手順で利用する
 
 注：Phase 2 の発明説明資料 PPTX は **既定でリッチスライド方式**（HTML+CSS → Chrome
