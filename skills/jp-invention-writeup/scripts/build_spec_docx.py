@@ -19,7 +19,11 @@ Usage:
         --claims ~/patent/<案件名>/output/請求項.txt \\
         --figure-list ~/patent/<案件名>/work/figure-list.md \\
         --figure-descriptions ~/patent/<案件名>/work/figure-descriptions.md \\
+        --definitions ~/patent/<案件名>/work/term-definitions.md \\
         --output ~/patent/<案件名>/output/技術説明書.docx
+
+--definitions は任意。造語・非標準用語（「スキル」「エージェント」等）の意義を
+〔発明を実施するための形態〕の冒頭に「〔用語の定義〕」として挿入する。
 """
 from __future__ import annotations
 
@@ -239,6 +243,62 @@ def parse_figure_list(md: str) -> list[tuple[int, str]]:
     return out
 
 
+_PARA_MARKER_RE = re.compile(r"^\s*【[０-９0-9]{4}】\s*$")
+
+
+def split_body_by_paragraph_markers(body: str) -> list[str]:
+    """body を 【０００X】 行（仮番号）で区切り、本文サブ段落のみを返す。
+    figure-descriptions.md 等で「【００１１】<改行>本文…」と仮番号付きで
+    書かれているケースに対応する。仮番号行は捨て、本文だけ各サブ段落として返す。
+    番号行が無い場合は body 全体を1要素のリストで返す（後方互換）。"""
+    sub_paras: list[list[str]] = []
+    current: list[str] = []
+    found_marker = False
+    for line in body.splitlines():
+        if _PARA_MARKER_RE.match(line):
+            found_marker = True
+            if current:
+                sub_paras.append(current)
+            current = []
+        else:
+            current.append(line)
+    if current:
+        sub_paras.append(current)
+    if not found_marker:
+        return [body]
+    out: list[str] = []
+    for p in sub_paras:
+        text = "\n".join(p).strip()
+        if text:
+            out.append(text)
+    return out
+
+
+def parse_definition_blocks(md: str) -> list[str]:
+    """用語の定義mdを空行区切りのブロックに分割する。
+    各ブロックが1段落（1【００XX】）になる。
+    除外する行：
+      - 見出し行（# で始まる行）
+      - 引用行（> で始まる行。テンプレート注記等を本文に出さないため）
+    先頭のリード文（例「本明細書において用いる主要な用語の意義は〜」）も
+    1ブロックとして扱う。"""
+    blocks: list[str] = []
+    current: list[str] = []
+    for line in md.splitlines():
+        stripped = line.lstrip()
+        if stripped.startswith("#") or stripped.startswith(">"):
+            continue
+        if not line.strip():
+            if current:
+                blocks.append("\n".join(current).strip())
+                current = []
+            continue
+        current.append(line)
+    if current:
+        blocks.append("\n".join(current).strip())
+    return [b for b in blocks if b]
+
+
 # ============================================================
 # メイン
 # ============================================================
@@ -247,10 +307,16 @@ def build(args):
     claims_text = Path(args.claims).expanduser().read_text(encoding="utf-8") if args.claims else ""
     figlist_md = Path(args.figure_list).expanduser().read_text(encoding="utf-8") if args.figure_list else ""
     figdesc_md = Path(args.figure_descriptions).expanduser().read_text(encoding="utf-8") if args.figure_descriptions else ""
+    defs_md = ""
+    if args.definitions:
+        defs_path = Path(args.definitions).expanduser()
+        if defs_path.exists():
+            defs_md = defs_path.read_text(encoding="utf-8")
 
     idea = parse_idea_md(idea_md)
     fig_list = parse_figure_list(figlist_md)
     fig_blocks, refs_text = parse_figure_descriptions(figdesc_md)
+    def_blocks = parse_definition_blocks(defs_md) if defs_md else []
 
     doc = Document()
     counter = ParaCounter()
@@ -317,9 +383,17 @@ def build(args):
 
     # ---- 【発明を実施するための形態】 ----
     add_heading(doc, "【発明を実施するための形態】", level=2)
+    # 用語の定義（造語・非標準用語の意義を冒頭で定義。請求項で用いる語を中心に）
+    if def_blocks:
+        add_heading(doc, "〔用語の定義〕", level=3)
+        for block in def_blocks:
+            add_paragraph_plain(doc, counter.next())
+            add_markdown_block(doc, block)
     for num, body in fig_blocks:
-        add_paragraph_plain(doc, counter.next())
-        add_markdown_block(doc, body)
+        # body 中の仮番号【００XX】を捨てて、サブ段落毎に counter で採番する
+        for sub in split_body_by_paragraph_markers(body):
+            add_paragraph_plain(doc, counter.next())
+            add_markdown_block(doc, sub)
 
     # ---- 【符号の説明】 ----
     add_heading(doc, "【符号の説明】", level=2)
@@ -349,6 +423,8 @@ def main():
     ap.add_argument("--claims", required=True)
     ap.add_argument("--figure-list", required=True)
     ap.add_argument("--figure-descriptions", required=True)
+    ap.add_argument("--definitions", required=False, default=None,
+                    help="用語の定義md（任意）。〔発明を実施するための形態〕冒頭に挿入")
     ap.add_argument("--output", required=True)
     args = ap.parse_args()
     build(args)

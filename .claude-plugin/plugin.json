@@ -1,7 +1,7 @@
 {
   "name": "jp-invention-writeup",
   "description": "日本特許出願の発明者向け資料一式（発明説明資料PPTX・請求項・図面PPTX・技術説明書DOCX）を、4フェーズの対話的ワークフローで生成する Claude Code プラグイン。",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "keywords": [
     "patent",
