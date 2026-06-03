@@ -1,0 +1,50 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <!-- Claude-color rounded square -->
+  <rect x="0" y="0" width="256" height="256" rx="58" ry="58" fill="#D97757"/>
+
+  <!-- Patent certificate document (white), folded top-right corner -->
+  <!-- body with a notched top-right corner -->
+  <path d="M70 48
+           h84
+           l24 24
+           v136
+           a8 8 0 0 1 -8 8
+           h-100
+           a8 8 0 0 1 -8 -8
+           v-152
+           a8 8 0 0 1 8 -8 z"
+        fill="#FFFFFF"/>
+  <!-- folded corner (knockout: shows background) -->
+  <path d="M154 48 l24 24 h-24 z" fill="#D97757"/>
+
+  <!-- text lines (knockout in background color) -->
+  <rect x="86" y="86"  width="84" height="9" rx="4.5" fill="#D97757"/>
+  <rect x="86" y="106" width="84" height="9" rx="4.5" fill="#D97757"/>
+  <rect x="86" y="126" width="58" height="9" rx="4.5" fill="#D97757"/>
+
+  <!-- award seal: white scalloped disc overlapping bottom-right, with ribbon tails -->
+  <!-- ribbon tails -->
+  <path d="M150 196 l0 40 12 -10 12 10 0 -40 z" fill="#FFFFFF"/>
+  <path d="M174 196 l0 40 12 -10 12 10 0 -40 z" fill="#FFFFFF"/>
+  <!-- terracotta gap ring to separate seal from document -->
+  <circle cx="174" cy="180" r="40" fill="#D97757"/>
+  <!-- scalloped seal -->
+  <g fill="#FFFFFF">
+    <circle cx="174" cy="180" r="33"/>
+    <!-- scallop bumps around the seal -->
+    <g>
+      <circle cx="174" cy="142" r="8"/>
+      <circle cx="201" cy="153" r="8"/>
+      <circle cx="212" cy="180" r="8"/>
+      <circle cx="201" cy="207" r="8"/>
+      <circle cx="174" cy="218" r="8"/>
+      <circle cx="147" cy="207" r="8"/>
+      <circle cx="136" cy="180" r="8"/>
+      <circle cx="147" cy="153" r="8"/>
+    </g>
+  </g>
+  <!-- star in seal center (knockout) -->
+  <path d="M174 162
+           l5.6 11.4 12.6 1.8 -9.1 8.9 2.1 12.5 -11.2 -5.9 -11.2 5.9 2.1 -12.5 -9.1 -8.9 12.6 -1.8 z"
+        fill="#D97757"/>
+</svg>

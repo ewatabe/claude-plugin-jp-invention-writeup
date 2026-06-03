@@ -1,5 +1,9 @@
 # jp-invention-writeup (Claude Code plugin)
 
+<p align="center">
+  <img src="assets/icon-256.png" alt="invention-disclosure (JP) icon" width="128" height="128">
+</p>
+
 日本特許出願の **発明者→特許事務所の引き渡し資料一式** を作成する Claude Code プラグイン。
 
 発明アイデアを膨らませ、出願審議会・特許事務所打合せ用の **発明説明資料PPTX**、**請求項**、**図面PPTX**、**技術説明書DOCX** を JPO実務に沿った形式で揃える。
@@ -11,7 +15,7 @@
 このリポジトリは Claude Code のマーケットプレイス兼プラグインとして動く。Claude Code のプロンプトで:
 
 ```
-/plugin marketplace add https://github.com/ewatabe/claude-plugin-jp-invention-writeup
+/plugin marketplace add https://github.com/ewatabe/claude-plugin-invention-disclosure-jp
 /plugin install jp-invention-writeup@jp-invention-writeup
 ```
 
@@ -20,16 +24,16 @@
 ローカルにクローン済みのものを使うなら:
 
 ```
-/plugin marketplace add ~/claude-plugin-jp-invention-writeup
+/plugin marketplace add ~/claude-plugin-invention-disclosure-jp
 /plugin install jp-invention-writeup@jp-invention-writeup
 ```
 
 ### 手動 (clone + symlink)
 
 ```bash
-git clone https://github.com/ewatabe/claude-plugin-jp-invention-writeup.git ~/claude-plugin-jp-invention-writeup
+git clone https://github.com/ewatabe/claude-plugin-invention-disclosure-jp.git ~/claude-plugin-invention-disclosure-jp
 # Claude Code がプラグインディレクトリとして認識する場所へリンク
-ln -s ~/claude-plugin-jp-invention-writeup ~/.claude/plugins/jp-invention-writeup
+ln -s ~/claude-plugin-invention-disclosure-jp ~/.claude/plugins/jp-invention-writeup
 ```
 
 ### 依存環境
