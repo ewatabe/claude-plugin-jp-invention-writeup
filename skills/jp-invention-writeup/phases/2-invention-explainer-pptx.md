@@ -32,8 +32,8 @@ Phase 2 の発明説明資料は **常にリッチスライド方式で作る**�
 4. テンプレからロゴ画像を抽出して `work/html-slides/logo.png` に配置、各 HTML の
    `slide-header` または `cover-slide` で読み込む
 5. 表紙・章扉は **テンプレの該当スライドをそのまま流用** するか、本スキルの
-   `templates/rich-slide.cover.html` を組織デザインに合わせて改変する選択肢を
-   ユーザーに提示
+   `templates/rich-slide.cover.html` を組織デザインに合わせて改変するかを
+   `AskUserQuestion` で選ばせる（2択。それぞれの長所を説明に書く）
 
 詳細手順は `references/rich-slide-design.md` の「組織テンプレートとの統合」節を参照。
 
@@ -82,6 +82,7 @@ Phase 2 の発明説明資料は **常にリッチスライド方式で作る**�
 
 `work/invention-explainer-draft.md` をユーザーに見せて、構成・順序・内容にOKをもらう。
 **この段階で骨子を確定させる。** pptx化後の修正は手間がかかる。
+確認は `AskUserQuestion` で「この構成でPPTX化に進む／修正する（自由入力）」を明示的に選ばせ、平文で同意を待たない。
 
 ### 3. PPTX生成（既定：リッチスライド方式）
 
@@ -204,7 +205,7 @@ python3 ${SKILL_DIR}/scripts/compose_jp_labels.py \
 5. **吹き出し2〜4個**でanchor付きcalloutを追加し、各callout テキストに対応請求項要素を明記
 6. **品質チェックリスト**（11項目）で最終確認
 
-Claudeはこのフローを **一度に全部聞かず**、ユーザの認知負荷を抑えて段階的にヒアリングする。詳細は `references/detailed-exhibit-design.md` を必ず読んでから開始。
+Claudeはこのフローを **一度に全部聞かず**、`AskUserQuestion` で3〜5問ずつ（ツール上限4問）に分けて段階的にヒアリングする。画面種別・レイアウト・デザイントーンのように候補が列挙できる問いは必ず選択肢で提示する。詳細は `references/detailed-exhibit-design.md` を必ず読んでから開始。
 
 ### 5. レイアウトの注意点
 
