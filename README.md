@@ -1,4 +1,4 @@
-# jp-invention-writeup (Claude Code plugin)
+# claude-plugin-invention-disclosure-jp (Claude Code plugin)
 
 <p align="center">
   <img src="assets/icon-256.png" alt="invention-disclosure (JP) icon" width="128" height="128">
